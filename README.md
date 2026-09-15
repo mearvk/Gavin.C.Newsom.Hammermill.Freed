@@ -61,6 +61,37 @@ Professional Software Repository as Ubuntu):
   dated, and sourced statistical/economic reference data kept apart from
   framing.
 
+### Admin Defenders — Windows and Linux
+
+Two companion **administrative file-protection** projects apply the same
+defensive engineering model — protect designated system files, directories,
+executables, and libraries from unauthorized modification, copying, or
+exposure — to the two platform families. Both share a **fail-closed SHA-256
+verification gate** (verify before build, execution, and diagnostics), a
+**protected-store** design that keeps content-addressed reference copies keyed
+by SHA-256, and an explicit boundary that they never bypass the platform's own
+security controls.
+
+- **[Windows.Admin.Defender](https://github.com/mearvk/Windows.Admin.Defender)**
+  — a Windows 10/11/12-era **file-system minifilter** driver (C, built with the
+  WDK) plus a user-mode administrator utility (`driver-defender`). The minifilter
+  denies direct directory-handle opens on protected roots — blocking directory
+  enumeration, wholesale copy, delete, and rename — while leaving ordinary file
+  reads working. It installs through the Windows Driver Store / PnPUtil and does
+  not bypass Secure Boot, driver signing, Defender, Device Guard, or UAC. A
+  GitHub Actions pipeline compiles both the driver (`WindowsAdminDefender.sys`)
+  and the utility on a Windows runner via the WDK NuGet packages, gated by the
+  SHA-256 verification step.
+
+- **[Linux.Admin.Defender](https://github.com/mearvk/Linux.Admin.Defender)**
+  — a distribution-aware Linux counterpart. A small, auditable **kernel module**
+  (`linux_admin_defender_lock.ko`) resolves one administrator-selected path and
+  sets the inode immutable flag, alongside Python tooling for a SQLite-backed
+  protected store and a SHA-256 update manager. It does not disable Secure Boot,
+  kernel lockdown, module-signature enforcement, SELinux, or AppArmor. A GitHub
+  Actions pipeline runs the verification gate, builds the module against the
+  runner's kernel headers, and validates the Python tools.
+
 ### How they connect
 
 - **Sleela** provides the language, C/C++ core, and the Nordshrift `.sst`
@@ -86,3 +117,5 @@ Professional Software Repository as Ubuntu):
 | [SLeeLa](https://github.com/mearvk/SLeeLa) | Sleela language, C/C++ core, and the Nordshrift `.sst` transpiler driver |
 | [Ubuntu.Determinant.Beta.Restricted](https://github.com/mearvk/Ubuntu.Determinant.Beta.Restricted) | NCIQ — SecureJDK / Graal Proffer systems project (Total native moderator) |
 | [Ubuntu.44D.Orange.Democratus](https://github.com/mearvk/Ubuntu.44D.Orange.Democratus) | NCIQ — Quiet Excellent; hardened reference-data edition |
+| [Windows.Admin.Defender](https://github.com/mearvk/Windows.Admin.Defender) | Windows file-system minifilter driver + admin utility for administrative file protection |
+| [Linux.Admin.Defender](https://github.com/mearvk/Linux.Admin.Defender) | Linux inode-immutable kernel module + Python protected-store/update tooling |
